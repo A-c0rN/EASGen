@@ -1,0 +1,11 @@
+LICENSE
+README.md
+setup.cfg
+setup.py
+src/EASGen/EASGen.py
+src/EASGen/__init__.py
+src/EASGen.egg-info/PKG-INFO
+src/EASGen.egg-info/SOURCES.txt
+src/EASGen.egg-info/dependency_links.txt
+src/EASGen.egg-info/requires.txt
+src/EASGen.egg-info/top_level.txt
