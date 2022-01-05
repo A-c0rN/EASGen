@@ -34,12 +34,22 @@ python -m pip install EASGen
 
 ## Usage
 To generate a simple SAME Required Weekly Test:
-```
+```python
 from EASGen import EASGen
 from pydub.playback import play
 
 AlertManager = EASGen.EASGen()
 header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
 Alert = AlertManager.generateEASAudio(header=header, attentionTone=False, endOfMessage=True) ## Generate an EAS SAME message with no ATTN signal, and with EOMs.
+play(Alert) ## Play the EAS Message
+```
+
+To use Inline Generation (Slower):
+```python
+from EASGen import EASGen
+from pydub.playback import play
+
+header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
+Alert = EASGen.genEAS(header=header, attentionTone=False, endOfMessage=True) ## Generate an EAS SAME message with no ATTN signal, and with EOMs.
 play(Alert) ## Play the EAS Message
 ```
