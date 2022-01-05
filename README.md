@@ -46,7 +46,7 @@ play(Alert) ## Play the EAS Message
 
 To use Inline Generation (Slower):
 ```python
-from EASGen import EASGen
+from EASGen.EASGen import EASGen
 from pydub.playback import play
 
 header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
