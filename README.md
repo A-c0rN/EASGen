@@ -5,12 +5,12 @@
 A Fast Python EAS Generation Library
 
 ## Features
->  - [x] EAS Generation 
- - [x] Individual Header, Attention Tone, and EOM Generation
- - [x] Class and Inline Generation Scripts
- - [x] Fast
- - [x] PyDub AudioSegment Output for Easy Integration
- - [x] Audio File Imput for Audio Injection
+> - [x] EAS Generation 
+> - [x] Individual Header, Attention Tone, and EOM Generation
+> - [x] Class and Inline Generation Scripts
+> - [x] Fast
+> - [x] PyDub AudioSegment Output for Easy Integration
+> - [x] Audio File Imput for Audio Injection
 
 ## Installation
 This package should be installable through Pip.
@@ -23,7 +23,9 @@ pip3 install EASGen
 ```
 
 On Windows:
+
 [Install Python](https://www.python.org/downloads/)
+
 open a new Command Prompt or Powershell window
 ```
 python -m pip install EASGen
