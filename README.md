@@ -22,11 +22,24 @@ sudo apt install python3 python3-pip
 pip3 install EASGen
 ```
 
+
 On Windows:
 
 [Install Python](https://www.python.org/downloads/)
 
-open a new Command Prompt or Powershell window
+In CMD:
 ```
 python -m pip install EASGen
+```
+
+## Usage
+To generate a simple SAME Required Weekly Test:
+```
+from EASGen import EASGen
+from pydub.playback import play
+
+AlertManager = EASGen.EASGen()
+header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
+Alert = AlertManager.generateEASAudio(header=header, attentionTone=False, endOfMessage=True) ## Generate an EAS SAME message with no ATTN signal, and with EOMs.
+play(Alert) ## Play the EAS Message
 ```
