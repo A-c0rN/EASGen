@@ -10,7 +10,7 @@ A Fast Python EAS Generation Library
 > - [x] Class and Inline Generation Scripts
 > - [x] Fast
 > - [x] PyDub AudioSegment Output for Easy Integration
-> - [x] Audio File Imput for Audio Injection
+> - [x] Audio File Input for Audio Injection
 
 ## Installation
 This package should be installable through Pip.
