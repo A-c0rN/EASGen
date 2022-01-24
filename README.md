@@ -11,6 +11,7 @@ A Fast Python EAS Generation Library
 > - [x] Fast
 > - [x] PyDub AudioSegment Output for Easy Integration
 > - [x] Audio File Input for Audio Injection
+> - [x] FAST AS ALL HELL
 
 ## Installation
 This package should be installable through Pip.
@@ -53,3 +54,17 @@ header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
 Alert = EASGen.genEAS(header=header, attentionTone=False, endOfMessage=True) ## Generate an EAS SAME message with no ATTN signal, and with EOMs.
 play(Alert) ## Play the EAS Message
 ```
+
+To Insert Audio into an alert:
+```python
+from EASGen.EASGen import EASGen
+from pydub.playback import play
+from pydub import AudioSegment
+
+header = "ZCZC-CIV-DMO-033000+0100-0010000-WACNTECH-" ## EAS Header to send
+audio = AudioSegment.from_wav("NewHampshireDMO.wav") ## Alert Audio import
+Alert = EASGen.genEAS(header=header, attentionTone=True, audio=audio, endOfMessage=True) ## Generate an EAS SAME message with an ATTN signal, the imported WAV file as the audio, and with EOMs.
+play(Alert) ## Play the EAS Message
+## The New Hampshire State Police has activated the New Hampshire Emergency Alert System in order to conduct a practice demo. This concludes this test of the New Hampshire Emergency Alert System.
+```
+Spamming New Hampshire Demos have never been easier!

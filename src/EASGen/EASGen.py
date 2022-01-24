@@ -36,7 +36,7 @@ class EASGen():
     @classmethod
     def __EOM__(cls, sampleRate:int):
         EOM = AudioSegment.empty() ## Pregen an AudioSegment object to populate with EOMs on the next line
-        for bit in ''.join(format(ord(x), '08b')[::-1] for x in '\xff'+('\xab'*16)+'NNNN'): EOM += cls.__Space__(sampleRate) if bit == "0" else cls.__Mark__(sampleRate)
+        for bit in ''.join(format(ord(x), '08b')[::-1] for x in ('\xab'*16)+'NNNN'): EOM += cls.__Space__(sampleRate) if bit == "0" else cls.__Mark__(sampleRate)
         return (cls.silence + EOM)*3
 
     @classmethod
