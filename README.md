@@ -10,7 +10,7 @@ A Fast Python EAS Generation Library
 > - [x] Class and Inline Generation Scripts
 > - [x] Fast
 > - [x] PyDub AudioSegment Output for Easy Integration
-> - [x] Audio File Imput for Audio Injection
+> - [x] Audio File Input for Audio Injection
 
 ## Installation
 This package should be installable through Pip.
@@ -46,7 +46,7 @@ play(Alert) ## Play the EAS Message
 
 To use Inline Generation (Slower):
 ```python
-from EASGen import EASGen
+from EASGen.EASGen import EASGen
 from pydub.playback import play
 
 header = "ZCZC-EAS-RWT-005007+0015-0010000-WACNTECH-" ## EAS Header to send
