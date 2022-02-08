@@ -10,7 +10,7 @@ os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 setup(
     name='EASGen',
     packages=['EASGen'],
-    version='0.1.5',
+    version='0.1.6',
     description='A Python library to generate EAS SAME Audio using Raw Data',
     author='A-c0rN',
     author_email='acrn@gwes-eas.network',
