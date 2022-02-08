@@ -1,4 +1,11 @@
+import os
 from setuptools import setup
+
+with open(os.path.join(os.path.dirname(__file__), 'README.md')) as readme:
+    README = readme.read()
+
+# allow setup.py to be run from any path
+os.chdir(os.path.normpath(os.path.join(os.path.abspath(__file__), os.pardir)))
 
 setup(
     name='EASGen',
@@ -9,6 +16,8 @@ setup(
     author_email='acrn@gwes-eas.network',
     license='ODbL-1.0',
     install_requires=['EASGen'],
+    long_description=README,
+    long_description_content_type='text/markdown',
     url='https://github.com/A-c0rN/EASGen',
     keywords='audio sound eas alerting emergency-alert-system',
     classifiers=[
