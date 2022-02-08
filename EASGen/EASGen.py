@@ -191,19 +191,3 @@ class EASGen():
         """
         ALERT = self.genEAS(header=header, attentionTone=attentionTone, endOfMessage=endOfMessage, audio=audio, sampleRate=sampleRate)
         return ALERT
-
-# from pydub.playback import play
-# print("Normal")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000))
-# print("DAS")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 48000))
-# print("TFT")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000).set_frame_rate(8000))
-# print("NWS")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "NWS", 24000).set_frame_rate(11025))
-# print("SAGE")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "SAGE", 24000))
-# print("DIGITAL")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "DIGITAL", 24000))
-# print("Trilithic")
-# play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "TRILITHIC", 24000))
