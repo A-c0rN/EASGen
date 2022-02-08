@@ -127,6 +127,7 @@ Supported ENDECS:
 > - [x] SAGE DIGITAL ENDEC (Mode = "DIGITAL")
 > - [x] Trilithic EASyPLUS/CAST/IPTV (Mode = "TRILITHIC")
 > - [x] NWS (Mode = "NWS", Resample to 11KHZ using ".set_frame_rate(11025)" on the generated alert)
+
 Unsupported ENDECS:
 > - [ ] HollyAnne Units (Can't sample down to 5KHz... This is a good thing.)
 > - [ ] Gorman-Reidlich Units (Don't listen to them enough to simulate. I think they're like TFT, but donno.)
