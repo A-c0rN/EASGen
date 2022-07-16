@@ -1,4 +1,3 @@
-
 from pydub import AudioSegment
 from pydub.generators import Sine
 
@@ -78,7 +77,7 @@ class EASGen():
         return EOM
 
     @classmethod
-    def genEAS(cls, header:str, attentionTone:bool=True, endOfMessage:bool=True, audio:AudioSegment=AudioSegment.empty(), mode:str="", sampleRate:int=24000) -> AudioSegment:
+    def genEAS(cls, header:str, attentionTone:bool=True, endOfMessage:bool=True, audio:AudioSegment=AudioSegment.empty(), mode:str="", sampleRate:int=24000, bandpass:bool=False) -> AudioSegment:
         """
         Generate EAS SAME from a String. (Inline Class, can be called without class Init)
 
@@ -156,6 +155,12 @@ class EASGen():
             EOMs = cls.genEOM(mode=mode, sampleRate=sampleRate)
 
         ALERT = cls.silence[:500] + Headers + ATTNTone + audio + EOMs + cls.silence[:500] ## Alert adds 500MS of silence at beginning/end to allow multiple EAS tones played back-to-back to be properly audible.
+        
+        ## Makes the tones sound more realistic and not high quality. Good match with the SAGE DIGITAL option.
+        if bandpass:
+            ALERT = ALERT.low_pass_filter(800)
+            ALERT = ALERT.high_pass_filter(1600)
+        
         return ALERT
 
     def generateEOMAudio(self, sampleRate:int=24000):
