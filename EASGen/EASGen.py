@@ -20,28 +20,120 @@ class EASGen:
         )
 
     @classmethod
-    def _attn(cls, mode: str = "", sample_rate: int = 24000):
-        if mode == "NWS":
-            return Sine(1050, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
-                duration=9000, volume=-4
-            )
-        elif mode == "BROADCASTER":
-            return Sine(1050, sample_rate=44100, bit_depth=16).to_audio_segment(
-                duration=9000, volume=-4
-            )
-        else:
-            return (
-                Sine(853, sample_rate=sample_rate, bit_depth=16)
-                .to_audio_segment(duration=8000, volume=-10)
-                .overlay(
-                    Sine(960, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
-                        duration=8000, volume=-10
-                    )
-                )
-            )
+    def _nws_attn(cls, sample_rate: int = 24000) -> AudioSegment:
+        return Sine(1050, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+            duration=9000, volume=-4
+        )
 
     @classmethod
-    def _eom(cls, mode: str = "", sample_rate: int = 24000):
+    def _ebs_attn(cls, sample_rate: int = 24000) -> AudioSegment:
+        return (
+            Sine(853, sample_rate=sample_rate, bit_depth=16)
+            .to_audio_segment(duration=8000, volume=-10)
+            .overlay(
+                Sine(960, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+                    duration=8000, volume=-10
+                )
+            )
+        )
+
+    @classmethod
+    def _npas_attn(cls, sample_rate: int = 24000) -> AudioSegment:
+        scree = Sine(3135.96, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+            duration=8000, volume=-10
+        )
+        high = (
+            Sine(1046.5, sample_rate=sample_rate, bit_depth=16)
+            .to_audio_segment(duration=500, volume=-10)
+            .overlay(
+                Sine(923.33, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+                    duration=500, volume=-10
+                )
+            )
+        )
+        low = (
+            Sine(659.26, sample_rate=sample_rate, bit_depth=16)
+            .to_audio_segment(duration=500, volume=-10)
+            .overlay(
+                Sine(440, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+                    duration=500, volume=-10
+                )
+            )
+        )
+        return scree.overlay((high + low) * 8)
+
+    @classmethod
+    def genATTN(cls, mode: str = "", sampleRate: int = 24000) -> AudioSegment:
+        sample_rate = sampleRate
+        attn = AudioSegment.empty()
+        if mode == "NWS":
+            attn = cls._nws_attn(sample_rate)
+        elif mode == "WEA":
+            tone = cls._ebs_attn(sample_rate)
+            silence = cls._silence[:500]
+            attn = (tone[:2000] + silence + (tone[:1000] + silence) * 2) * 2
+        elif mode == "NPAS":
+            attn = cls._npas_attn(sample_rate) + cls._silence
+        else:
+            attn = cls._ebs_attn(sample_rate)
+        return attn
+
+    @classmethod
+    def genHeader(
+        cls, header_data: str, mode: str = "", sampleRate: int = 24000
+    ) -> AudioSegment:
+        sample_rate = sampleRate
+        header = AudioSegment.empty()
+        headers = AudioSegment.empty()
+        if mode == "NWS":
+            data = ("\xab" * 16) + header_data + ("\x00" * 2)
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers = (header + cls._silence) * 3 + cls._silence
+        elif mode == "DIGITAL":
+            data = "\x00" + ("\xab" * 16) + header_data + ("\xff" * 3)
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers = header + cls._silence
+            data = ("\xab" * 16) + header_data + ("\xff" * 3)
+            header = AudioSegment.empty()
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers += (header + cls._silence) * 2
+        elif mode == "SAGE":
+            data = ("\xab" * 16) + header_data + "\xff"
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers = (header + cls._silence) * 3
+        elif mode == "TRILITHIC":
+            data = ("\xab" * 16) + header_data
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers = (header + cls._silence[:850]) * 3 + cls._silence[:150]
+        elif mode == "NPAS" or mode == "WEA":
+            pass
+        else:
+            data = ("\xab" * 16) + header_data
+            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
+                header += (
+                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
+                )
+            headers = (header + cls._silence) * 3
+        return headers
+
+    @classmethod
+    def genEOM(cls, mode: str = "", sampleRate: int = 24000) -> AudioSegment:
+        sample_rate = sampleRate
         eom = AudioSegment.empty()
         eoms = AudioSegment.empty()
         if mode == "NWS":
@@ -78,13 +170,8 @@ class EASGen:
             ):
                 eom += cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
             eoms = (cls._silence[:850] + eom) * 3
-        elif mode == "BROADCASTER":
-            for bit in "".join(
-                format(ord(x), "08b")[::-1]
-                for x in ("\xab" * 16) + "NNNN" + ("\x00" * 3)
-            ):
-                eom += cls._space(44100) if bit == "0" else cls._mark(44100)
-            eoms = (cls._silence + eom) * 3
+        elif mode == "NPAS" or mode == "WEA":
+            pass
         else:
             for bit in "".join(
                 format(ord(x), "08b")[::-1] for x in ("\xab" * 16) + "NNNN"
@@ -94,116 +181,55 @@ class EASGen:
         return eoms
 
     @classmethod
-    def _header(cls, header_data: str, mode: str = "", sample_rate: int = 24000):
-        header = AudioSegment.empty()
-        headers = AudioSegment.empty()
-        if mode == "NWS":
-            data = ("\xab" * 16) + header_data + ("\x00" * 2)
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers = (header + cls._silence) * 3
-        elif mode == "DIGITAL":
-            data = "\x00" + ("\xab" * 16) + header_data + ("\xff" * 3)
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers = header + cls._silence
-            data = ("\xab" * 16) + header_data + ("\xff" * 3)
-            header = AudioSegment.empty()
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers += (header + cls._silence) * 2
-        elif mode == "SAGE":
-            data = ("\xab" * 16) + header_data + "\xff"
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers = (header + cls._silence) * 3
-        elif mode == "TRILITHIC":
-            data = ("\xab" * 16) + header_data
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers = (header + cls._silence[:850]) * 3 + cls._silence[:150]
-        elif mode == "BROADCASTER":
-            data = ("\xab" * 16) + header_data + ("\x00" * 3)
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += cls._space(44100) if bit == "0" else cls._mark(44100)
-            headers = (header + cls._silence) * 3
-        else:
-            data = ("\xab" * 16) + header_data
-            for bit in "".join(format(ord(x), "08b")[::-1] for x in data):
-                header += (
-                    cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
-                )
-            headers = (header + cls._silence) * 3
-        return headers
-
-    @classmethod
-    def genEOM(cls, mode: str = "", sampleRate: int = 24000):
-        """
-        Generate SAME _eoms.(Inline Class, can be called without class Init)
-        :int sample_rate:
-            Audio sample_rate
-        Returns a PyDub AudioSegment of the Generated SAME _eoms.
-        """
-        eom = cls._eom(mode=mode, sample_rate=sampleRate)
-        return eom
-
-    @classmethod
     def genEAS(
         cls,
-        header: str,
+        header: str = "",
         attentionTone: bool = True,
         endOfMessage: bool = True,
         audio: AudioSegment = AudioSegment.empty(),
         mode: str = "",
         sampleRate: int = 24000,
     ) -> AudioSegment:
-        """
-        Generate EAS SAME from a String. (Inline Class, can be called without class Init)
-        :str hdr:
-            Data to be modulated into SAME EAS Data.
-        :bool attentionTone:
-            Enable Internal Attention Tone (EBS Style 853+960).
-        :bool endOfMessage:
-            Enable SAME End Of Message bursts.
-        :AudioSegment audio:
-            Included audio in-between the SAME header Bursts + Attention Tone, and the End Of Message Bursts.
-        :str mode:
-            Select between "None, SAGE, DIGITAL, TRILITHIC, BROADCASTER, NWS" for "Authentic" Encoder header tones.
-        :int sampleRate:
-            Audio sample rate
-        Returns a PyDub AudioSegment of the Generated Alert.
-        """
         sample_rate = sampleRate
         attn_tone = AudioSegment.empty()
-        _eoms = AudioSegment.empty()
-        headers = cls._header(header=header, mode=mode, sample_rate=sample_rate)
+        eoms = AudioSegment.empty()
+        headers = cls.genHeader(header_data=header, mode=mode, sampleRate=sample_rate)
+
         if audio != AudioSegment.empty():
             audio = (
                 audio.set_frame_rate(sample_rate).set_channels(1).set_sample_width(2)
             )
-        if attentionTone:
-            attn_tone = cls._attn(mode=mode, sample_rate=sample_rate) + cls._silence
+        if attentionTone or mode == "NPAS" or mode == "WEA":
+            attn_tone = cls.genATTN(mode=mode, sampleRate=sample_rate) + cls._silence
 
         if endOfMessage:
-            _eoms = cls.genEOM(mode=mode, sample_rate=sample_rate)
+            eoms = cls.genEOM(mode=mode, sampleRate=sample_rate)
         alert: AudioSegment = (
-            cls._silence[:500]
-            + headers
-            + attn_tone
-            + audio
-            + _eoms
-            + cls._silence[:500]
+            cls._silence[:500] + headers + attn_tone + audio + eoms + cls._silence[:500]
         )
-        if mode == "BROADCASTER":
-            alert.set_frame_rate(8000)
         return alert
+
+    @classmethod
+    def export_wav(
+        cls,
+        filename: str,
+        audio: AudioSegment,
+        sample_rate: int = 24000,
+        channels: int = 1,
+    ):
+        """Proper WAV File exporting
+
+        Args:
+            filename (str): WAV Filename
+            audio (AudioSegment): WAV Audio
+            sample_rate (int, optional): WAV sample rate. Defaults to 24000.
+            channels (int, optional): WAV Channels. Defaults to 1.
+        """
+        audio.set_channels(channels=channels).set_frame_rate(
+            frame_rate=sample_rate
+        ).set_sample_width(sample_width=2)
+        audio.export(
+            filename,
+            format="wav",
+            codec="pcm_s16le",
+        )
