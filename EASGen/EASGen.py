@@ -46,7 +46,7 @@ class EASGen:
             Sine(1046.5, sample_rate=sample_rate, bit_depth=16)
             .to_audio_segment(duration=500, volume=-10)
             .overlay(
-                Sine(923.33, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+                Sine(932.33, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
                     duration=500, volume=-10
                 )
             )
