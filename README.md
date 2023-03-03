@@ -127,23 +127,22 @@ from pydub.playback import play
 from pydub import AudioSegment
 
 print("Normal / EASyCAP")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000, False))
 print("DAS")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 48000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 48000, True))
 print("TFT")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000).set_frame_rate(8000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "", 24000, True).set_frame_rate(8000))
 print("NWS")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "NWS", 24000).set_frame_rate(11025))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "NWS", 24000, True).set_frame_rate(11025))
 print("SAGE")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "SAGE", 24000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "SAGE", 24000, True))
 print("DIGITAL")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "DIGITAL", 24000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "DIGITAL", 24000, True))
 print("EASyPLUS/CAST/IPTV")
-play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "TRILITHIC", 24000))
+play(EASGen.genEAS("ZCZC-EAS-DMO-055079+0100-0391810-WACN    -", True, True, AudioSegment.empty(), "TRILITHIC", 24000, True))
 ```
 
-### NEW:
-Added WEA and NPAS Modes:
+To generate ATTN only alerts, such as NPAS or WEA:
 
 For NPAS:
 ```python
@@ -151,7 +150,7 @@ from EASGen import EASGen
 from pydub.playback import play
 from pydub import AudioSegment
 
-Alert = EASGen.genEAS(mode="NPAS") ## Generate an NPAS (AlertReady) Tone
+Alert = EASGen.genATTN(mode="NPAS") ## Generate an NPAS (AlertReady) Tone
 play(Alert) ## Play the NPAS Tones
 ```
 
@@ -161,11 +160,11 @@ from EASGen import EASGen
 from pydub.playback import play
 from pydub import AudioSegment
 
-Alert = EASGen.genEAS(mode="WEA") ## Generate WEA Tones
+Alert = EASGen.genATTN(mode="WEA") ## Generate WEA Tones
 play(Alert) ## Play the WEA Tones
 ```
 
-### NEW:
+## NEW FEATURE:
 (Thanks to Dondaplayer)
 Added a Bandpass Filter:
 
