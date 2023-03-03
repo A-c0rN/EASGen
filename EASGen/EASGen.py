@@ -39,7 +39,7 @@ class EASGen:
 
     @classmethod
     def _npas_attn(cls, sample_rate: int = 24000) -> AudioSegment:
-        scree = Sine(3135.96, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
+        npas = Sine(3135.96, sample_rate=sample_rate, bit_depth=16).to_audio_segment(
             duration=8000, volume=-10
         )
         high = (
@@ -60,10 +60,22 @@ class EASGen:
                 )
             )
         )
-        return scree.overlay((high + low) * 8)
+        return npas.overlay((high + low) * 8)
 
     @classmethod
-    def genATTN(cls, mode: str = "", sampleRate: int = 24000) -> AudioSegment:
+    def genATTN(
+        cls, 
+        mode: str = "", 
+        sampleRate: int = 24000, 
+        bandpass: bool = False
+    ) -> AudioSegment:
+        """Dynamic Attention Tone generation.
+
+        Args:
+            mode (str, optional): Attention Tone Generation Emulation. Defaults to None.
+            sample_rate (int, optional): WAV sample rate. Defaults to 24000.
+            bandpass (bool, optional): Bandpass EAS Audio. Defaults to False.
+        """
         sample_rate = sampleRate
         attn = AudioSegment.empty()
         if mode == "NWS":
@@ -76,12 +88,26 @@ class EASGen:
             attn = cls._npas_attn(sample_rate) + cls._silence
         else:
             attn = cls._ebs_attn(sample_rate)
+        if bandpass:
+            attn = attn.low_pass_filter(800).high_pass_filter(1600)
         return attn
 
     @classmethod
     def genHeader(
-        cls, header_data: str, mode: str = "", sampleRate: int = 24000
+        cls, 
+        header_data: str, 
+        mode: str = "", 
+        sampleRate: int = 24000, 
+        bandpass: bool = False
     ) -> AudioSegment:
+        """Dynamic EAS header generation.
+
+        Args:
+            header (str): EAS Data String. Required.
+            mode (str, optional): EAS Generation Encoder Emulation. Defaults to None.
+            sample_rate (int, optional): WAV sample rate. Defaults to 24000.
+            bandpass (bool, optional): Bandpass EAS Audio. Defaults to False.
+        """
         sample_rate = sampleRate
         header = AudioSegment.empty()
         headers = AudioSegment.empty()
@@ -129,10 +155,24 @@ class EASGen:
                     cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
                 )
             headers = (header + cls._silence) * 3
+        if bandpass:
+            headers = headers.low_pass_filter(800).high_pass_filter(1600)
         return headers
 
     @classmethod
-    def genEOM(cls, mode: str = "", sampleRate: int = 24000) -> AudioSegment:
+    def genEOM(
+        cls, 
+        mode: str = "", 
+        sampleRate: int = 24000, 
+        bandpass: bool = False
+    ) -> AudioSegment:
+        """Dynamic EOM Generation.
+
+        Args:
+            mode (str, optional): EAS Generation Encoder Emulation. Defaults to None.
+            sample_rate (int, optional): WAV sample rate. Defaults to 24000.
+            bandpass (bool, optional): Bandpass EAS Audio. Defaults to False.
+        """
         sample_rate = sampleRate
         eom = AudioSegment.empty()
         eoms = AudioSegment.empty()
@@ -178,6 +218,8 @@ class EASGen:
             ):
                 eom += cls._space(sample_rate) if bit == "0" else cls._mark(sample_rate)
             eoms = (cls._silence + eom) * 3
+        if bandpass:
+            eoms = eoms.low_pass_filter(800).high_pass_filter(1600)
         return eoms
 
     @classmethod
@@ -188,8 +230,20 @@ class EASGen:
         endOfMessage: bool = True,
         audio: AudioSegment = AudioSegment.empty(),
         mode: str = "",
-        sampleRate: int = 24000,
+        sampleRate: int = 24000, 
+        bandpass: bool = False
     ) -> AudioSegment:
+        """Mainline EAS Generation
+
+        Args:
+            header (str): EAS Data String. Required.
+            attentionTone (bool, optional): Attention Tone Generation Flag. Defaults to True.
+            endOfMessage (bool, optional): End of Message Generation Flag. Defaults to True.
+            audio (AudioSegment, optional): Audio object (Inserted into Message). Defaults to Empty.
+            mode (str, optional): EAS Generation Encoder Emulation. Defaults to None.
+            sample_rate (int, optional): WAV sample rate. Defaults to 24000.
+            bandpass (bool, optional): Bandpass EAS Audio. Defaults to False.
+        """
         sample_rate = sampleRate
         attn_tone = AudioSegment.empty()
         eoms = AudioSegment.empty()
@@ -207,6 +261,8 @@ class EASGen:
         alert: AudioSegment = (
             cls._silence[:500] + headers + attn_tone + audio + eoms + cls._silence[:500]
         )
+        if bandpass:
+            alert = alert.low_pass_filter(800).high_pass_filter(1600)
         return alert
 
     @classmethod
