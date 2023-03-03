@@ -165,4 +165,18 @@ Alert = EASGen.genEAS(mode="WEA") ## Generate WEA Tones
 play(Alert) ## Play the WEA Tones
 ```
 
+### NEW:
+(Thanks to Dondaplayer)
+Added a Bandpass Filter:
+
+```python
+from EASGen import EASGen
+from pydub.playback import play
+from pydub import AudioSegment
+
+header = "ZCZC-CIV-DMO-033000+0100-0010000-WACNTECH-" ## EAS Header to send
+Alert = EASGen.genEAS(header=header, attentionTone=True, mode="DIGITAL", endOfMessage=True, bandpass=True) # New BandPass feature, which improves the audio quality on some emulation modes.
+play(Alert) ## Play the EAS Message
+```
+
 Hope you enjoy!
