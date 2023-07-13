@@ -1,3 +1,4 @@
+# Third-Party
 from pydub import AudioSegment
 from pydub.generators import Sine
 
@@ -325,11 +326,7 @@ class EASGen:
         audio.set_channels(channels=channels).set_frame_rate(
             frame_rate=sample_rate
         ).set_sample_width(sample_width=2)
-        audio.export(
-            filename,
-            format="wav",
-            codec="pcm_s16le",
-        )
+        audio.export(filename, format="wav", codec="pcm_s16le")
         return None
 
     @classmethod
